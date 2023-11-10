@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=barbershop_scoresheets
+POSTGRES_USER=DHpnXzAagvIJMUvQkCBiSvplNfmCXxmN
+POSTGRES_PASSWORD=1s6emOFHH0iL4jPf4eLV7wrHL641GmDUWKGcYMqZvq0kzssth2M9KIWGTjLFCKEe
