@@ -289,4 +289,3 @@ SOCIALACCOUNT_FORMS = {"signup": "scoresheets.users.forms.UserSocialSignupForm"}
 
 
 AFFINDA_API_KEY = env("AFFINDA_API_KEY", default="")
-print(AFFINDA_API_KEY)
