@@ -1,9 +1,17 @@
+from pathlib import Path
+
+from affinda import AffindaAPI, TokenCredential
+from dash import dcc, html
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, RedirectView, UpdateView
+from django_plotly_dash import DjangoDash
 
 User = get_user_model()
 
@@ -41,3 +49,43 @@ class UserRedirectView(LoginRequiredMixin, RedirectView):
 
 
 user_redirect_view = UserRedirectView.as_view()
+
+import plotly.graph_objs as go
+
+
+
+# Data for the bar chart
+
+
+
+
+
+def scoresheet_view(request, identifier):
+    app = DjangoDash('SimpleExample')  # replaces dash.Dash
+    credential = TokenCredential(token=settings.AFFINDA_API_KEY)
+    client = AffindaAPI(credential=credential)
+    doc = client.get_document(identifier=identifier)
+    data = [(quartet.get("parsed").get("quartetName").get("parsed"), quartet.get("parsed").get("percentage").get("parsed")) for quartet in doc.data.get("quartet")]
+
+    app.layout = html.Div([
+        dcc.Graph(
+            id='bar-chart',
+            figure={
+                'data': [
+                    go.Bar(
+                        x=[item[0] for item in data],  # labels
+                        y=[item[1] for item in data],  # values
+                        # marker={'color': ['blue', 'green']}  # bar colors
+                    )
+                ],
+                'layout': go.Layout(
+                    title='A silly little chart',
+                    xaxis={'title': 'Groups'},
+                    yaxis={'title': 'Values'},
+                    margin={'l': 40, 'b': 40, 't': 40, 'r': 10},
+                    hovermode='closest'
+                )
+            }
+        )
+    ])
+    return render(request, 'pages/home.html', {'doc': doc})

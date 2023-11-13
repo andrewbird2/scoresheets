@@ -2,8 +2,10 @@
 Base settings to build other settings files upon.
 """
 from pathlib import Path
+from dotenv import load_dotenv
 
 import environ
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # scoresheets/
@@ -83,6 +85,7 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
 ]
 
 LOCAL_APPS = [
@@ -143,6 +146,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "django_plotly_dash.middleware.BaseMiddleware",
 ]
 
 # STATIC
@@ -213,7 +217,7 @@ SESSION_COOKIE_HTTPONLY = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-httponly
 CSRF_COOKIE_HTTPONLY = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#x-frame-options
-X_FRAME_OPTIONS = "DENY"
+X_FRAME_OPTIONS = "SAMEORIGIN"
 
 # EMAIL
 # ------------------------------------------------------------------------------
@@ -284,5 +288,5 @@ SOCIALACCOUNT_ADAPTER = "scoresheets.users.adapters.SocialAccountAdapter"
 SOCIALACCOUNT_FORMS = {"signup": "scoresheets.users.forms.UserSocialSignupForm"}
 
 
-# Your stuff...
-# ------------------------------------------------------------------------------
+AFFINDA_API_KEY = env("AFFINDA_API_KEY", default="")
+print(AFFINDA_API_KEY)
