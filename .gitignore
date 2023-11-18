@@ -310,3 +310,5 @@ scoresheets/media/
 .env
 .envs/*
 !.envs/.local/
+
+scripts/
