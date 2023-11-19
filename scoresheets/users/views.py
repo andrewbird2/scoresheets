@@ -1,17 +1,14 @@
-from pathlib import Path
-
+import plotly.graph_objs as go
 from affinda import AffindaAPI, TokenCredential
-from dash import dcc, html
+from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, RedirectView, UpdateView
-from django_plotly_dash import DjangoDash
 
 User = get_user_model()
 
@@ -50,42 +47,50 @@ class UserRedirectView(LoginRequiredMixin, RedirectView):
 
 user_redirect_view = UserRedirectView.as_view()
 
-import plotly.graph_objs as go
 
+class IdentifierForm(forms.Form):
+    identifier = forms.CharField()
 
+def get_data_from_quartet(quartet: dict):
+    name = quartet.get("parsed").get("quartetName").get("parsed")
+    overall = quartet.get("parsed").get("percentage").get("parsed")
+    results = quartet.get("parsed").get("result")
+    singing = sum([r.get("parsed").get("singingScore").get("parsed") for r in results])
+    music = sum([r.get("parsed").get("musicScore").get("parsed") for r in results])
+    performance = sum([r.get("parsed").get("performanceScore").get("parsed") for r in results])
+    return name, overall, singing, music, performance
 
-# Data for the bar chart
+def scoresheet(request):
+    if identifier := request.GET.get('identifier'):
 
+        credential = TokenCredential(token=settings.AFFINDA_API_KEY)
+        client = AffindaAPI(credential=credential)
+        doc = client.get_document(identifier=identifier)
 
+        all_results = [get_data_from_quartet(q) for q in doc.data.get("quartet")]
+        all_results.sort(key=lambda x: x[1], reverse=True)
 
+        competitors = [r[0] for r in all_results]
+        singing_scores = [r[2] for r in all_results]
+        music_scores = [r[3] for r in all_results]
+        performance_scores = [r[4] for r in all_results]
 
+        # Create traces
+        fig = go.Figure()
+        fig.add_trace(go.Bar(x=competitors, y=singing_scores, name='Singing'))
+        fig.add_trace(go.Bar(x=competitors, y=music_scores, name='Music'))
+        fig.add_trace(go.Bar(x=competitors, y=performance_scores, name='Performance'))
 
-def scoresheet_view(request, identifier):
-    app = DjangoDash('SimpleExample')  # replaces dash.Dash
-    credential = TokenCredential(token=settings.AFFINDA_API_KEY)
-    client = AffindaAPI(credential=credential)
-    doc = client.get_document(identifier=identifier)
-    data = [(quartet.get("parsed").get("quartetName").get("parsed"), quartet.get("parsed").get("percentage").get("parsed")) for quartet in doc.data.get("quartet")]
-
-    app.layout = html.Div([
-        dcc.Graph(
-            id='bar-chart',
-            figure={
-                'data': [
-                    go.Bar(
-                        x=[item[0] for item in data],  # labels
-                        y=[item[1] for item in data],  # values
-                        # marker={'color': ['blue', 'green']}  # bar colors
-                    )
-                ],
-                'layout': go.Layout(
-                    title='A silly little chart',
-                    xaxis={'title': 'Groups'},
-                    yaxis={'title': 'Values'},
-                    margin={'l': 40, 'b': 40, 't': 40, 'r': 10},
-                    hovermode='closest'
-                )
-            }
+        # Layout adjustments
+        fig.update_layout(
+            title='Competition Scores by Competitor',
+            xaxis_title='Competitors',
+            yaxis_title='Scores',
+            barmode='group'
         )
-    ])
-    return render(request, 'pages/home.html', {'doc': doc})
+        chart = fig.to_html()
+        context = {'chart': chart, 'form': IdentifierForm(),
+                   "reviewUrl": doc.meta.review_url}
+    else:
+        context = {'form': IdentifierForm()}
+    return render(request, 'pages/home.html', context=context)

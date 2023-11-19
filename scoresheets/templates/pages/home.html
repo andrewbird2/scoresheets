@@ -1,5 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+    <form method="GET" action="{% url 'home' %}">
+        {{ form.as_p }}
 
-{%load plotly_dash%}
+        <button>Submit</button>
+    </form>
 
-{%plotly_app name="SimpleExample"%}
+    {{ chart|safe }}
 
+  <iframe src={{ reviewUrl }} ></iframe>
+
+{% endblock content %}
