@@ -89,6 +89,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "scoresheets.users",
+    "scoresheets.main",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps

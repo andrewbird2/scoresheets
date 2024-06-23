@@ -10,9 +10,10 @@ SECRET_KEY = env(
     "DJANGO_SECRET_KEY",
     default="n0tc9toFT2eHP6jMcR1ODob01BlFD8Ob8JXOhflG8QvH5z6XXwTHSIxyBbImt2HW",
 )
-# https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
-
+# https://docs.djangoproject.com/en/dev/ref/settings/#-hosts
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "https://localhost", "*",
+"https://glowing-fishstick-96j7gxr6j97fp4rq-8000.app.github.dev"]
+CSRF_TRUSTED_ORIGINS = ["https://glowing-fishstick-96j7gxr6j97fp4rq-8000.app.github.dev", "https://localhost:8000"]
 # CACHES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#caches
