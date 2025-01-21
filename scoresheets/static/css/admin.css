@@ -1,0 +1,56 @@
+/* Custom CSS for Django Admin Interface */
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #333;
+}
+
+a {
+    color: #007bff;
+}
+
+a:hover {
+    color: #0056b3;
+}
+
+.navbar {
+    background-color: #343a40;
+}
+
+.navbar a {
+    color: #ffffff;
+}
+
+.navbar a:hover {
+    color: #d4d4d4;
+}
+
+.sidebar {
+    background-color: #343a40;
+}
+
+.sidebar a {
+    color: #ffffff;
+}
+
+.sidebar a:hover {
+    color: #d4d4d4;
+}
+
+.content {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.footer {
+    background-color: #343a40;
+    color: #ffffff;
+    padding: 10px;
+    text-align: center;
+}
